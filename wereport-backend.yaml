@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wereport-backend-deployment
+spec:
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: wereport-backend
+    spec:
+      containers:
+      - name: wereport-backend
+        image: eu.gcr.io/slavayssiere-sandbox/wereport-backend:0.0.4
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+        env:
+        - name: CASSANDRA_HOSTS
+          value: cassandra
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wereport-backend-service
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 31080
+      name: restapi
+    - port: 8081
+      targetPort: 8081
+      nodePort: 31081
+      name: websocketapi
+  selector:
+    app: wereport-backend
+  type: NodePort
